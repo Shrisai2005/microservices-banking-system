@@ -125,5 +125,28 @@ Future<bool> transfer(
 
   return response.statusCode == 200;
 }
+Future<String?> getAccountNumberByEmail(
+    String email) async {
+
+  final response = await http.get(
+
+    Uri.parse(
+      "${Constants.baseUrl}/api/accounts/email/$email",
+    ),
+  );
+
+  print(response.statusCode);
+  print(response.body);
+
+  if (response.statusCode == 200) {
+
+    final data =
+        jsonDecode(response.body);
+
+    return data["accountNumber"];
+  }
+
+  return null;
+}
 
 }

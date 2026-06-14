@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../services/account_service.dart';
+import '../../storage/local_storage.dart';
 
 class TransferScreen extends StatefulWidget {
   const TransferScreen({super.key});
@@ -18,57 +19,82 @@ class _TransferScreenState
   final amountController =
       TextEditingController();
 
-  final String fromAccount =
-      "1781023802024";
+  
+  String fromAccount = "";
 
   bool isLoading = false;
 
-  Future<void> transferMoney() async {
 
-    setState(() {
-      isLoading = true;
-    });
+Future<void> transferMoney() async {
 
-    bool success =
-        await AccountService().transfer(
-      fromAccount,
-      toAccountController.text,
-      double.parse(
-        amountController.text,
+  final account =
+      await LocalStorage
+          .getAccountNumber();
+
+  if (account == null) {
+
+    ScaffoldMessenger.of(context)
+        .showSnackBar(
+      const SnackBar(
+        content: Text(
+          "Account not found",
+        ),
       ),
     );
 
-    setState(() {
-      isLoading = false;
-    });
-
-    if (success) {
-
-      if (!mounted) return;
-
-      ScaffoldMessenger.of(context)
-          .showSnackBar(
-        const SnackBar(
-          content: Text(
-            "Transfer Successful",
-          ),
-        ),
-      );
-
-      Navigator.pop(context);
-
-    } else {
-
-      ScaffoldMessenger.of(context)
-          .showSnackBar(
-        const SnackBar(
-          content: Text(
-            "Transfer Failed",
-          ),
-        ),
-      );
-    }
+    return;
   }
+
+  fromAccount = account;
+
+  setState(() {
+    isLoading = true;
+  });
+
+  bool success =
+      await AccountService().transfer(
+
+    fromAccount,
+
+    toAccountController.text.trim(),
+
+    double.parse(
+      amountController.text,
+    ),
+  );
+
+  setState(() {
+    isLoading = false;
+  });
+
+  if (success) {
+
+    if (!mounted) return;
+
+    ScaffoldMessenger.of(context)
+        .showSnackBar(
+      const SnackBar(
+        content: Text(
+          "Transfer Successful",
+        ),
+      ),
+    );
+
+    Navigator.pop(context);
+
+  } else {
+
+    ScaffoldMessenger.of(context)
+        .showSnackBar(
+      const SnackBar(
+        content: Text(
+          "Transfer Failed",
+        ),
+      ),
+    );
+  }
+}
+
 
   @override
   Widget build(BuildContext context) {

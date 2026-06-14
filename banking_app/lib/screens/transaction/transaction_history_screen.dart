@@ -1,6 +1,6 @@
 
 import 'package:flutter/material.dart';
-
+import '../../storage/local_storage.dart';
 import '../../services/transaction_service.dart';
 
 class TransactionHistoryScreen
@@ -24,8 +24,7 @@ class _TransactionHistoryScreenState
 
   bool isLoading = true;
 
-  final String accountNumber =
-      "1781023802024";
+  String accountNumber = "";
 
   @override
   void initState() {
@@ -33,20 +32,38 @@ class _TransactionHistoryScreenState
     loadTransactions();
   }
 
-  Future<void> loadTransactions()
-      async {
 
-    final result =
-        await TransactionService()
-            .getTransactions(
-      accountNumber,
-    );
+Future<void> loadTransactions()
+    async {
+
+  final account =
+      await LocalStorage
+          .getAccountNumber();
+
+  if (account == null) {
 
     setState(() {
-      transactions = result;
       isLoading = false;
     });
+
+    return;
   }
+
+  accountNumber = account;
+
+  final result =
+      await TransactionService()
+          .getTransactions(
+    accountNumber,
+  );
+
+  setState(() {
+
+    transactions = result;
+
+    isLoading = false;
+  });
+}
 
   @override
   Widget build(BuildContext context) {

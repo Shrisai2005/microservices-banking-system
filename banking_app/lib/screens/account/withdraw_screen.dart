@@ -1,7 +1,7 @@
 
 import 'package:flutter/material.dart';
 import '../../services/account_service.dart';
-
+import '../../storage/local_storage.dart';
 class WithdrawScreen extends StatefulWidget {
   const WithdrawScreen({super.key});
 
@@ -16,56 +16,78 @@ class _WithdrawScreenState
   final amountController =
       TextEditingController();
 
-  final String accountNumber =
-      "1781023802024";
+
+  String accountNumber = "";
 
   bool isLoading = false;
 
-  Future<void> withdrawMoney() async {
+Future<void> withdrawMoney() async {
 
-    setState(() {
-      isLoading = true;
-    });
+  final account =
+      await LocalStorage
+          .getAccountNumber();
 
-    bool success =
-        await AccountService().withdraw(
-      accountNumber,
-      double.parse(
-        amountController.text,
+  if (account == null) {
+
+    ScaffoldMessenger.of(context)
+        .showSnackBar(
+      const SnackBar(
+        content: Text(
+          "Account not found",
+        ),
       ),
     );
 
-    setState(() {
-      isLoading = false;
-    });
-
-    if (success) {
-
-      if (!mounted) return;
-
-      ScaffoldMessenger.of(context)
-          .showSnackBar(
-        const SnackBar(
-          content: Text(
-            "Withdrawal Successful",
-          ),
-        ),
-      );
-
-      Navigator.pop(context);
-
-    } else {
-
-      ScaffoldMessenger.of(context)
-          .showSnackBar(
-        const SnackBar(
-          content: Text(
-            "Withdrawal Failed",
-          ),
-        ),
-      );
-    }
+    return;
   }
+
+  accountNumber = account;
+
+  setState(() {
+    isLoading = true;
+  });
+
+  bool success =
+      await AccountService().withdraw(
+
+    accountNumber,
+
+    double.parse(
+      amountController.text,
+    ),
+  );
+
+  setState(() {
+    isLoading = false;
+  });
+
+  if (success) {
+
+    if (!mounted) return;
+
+    ScaffoldMessenger.of(context)
+        .showSnackBar(
+      const SnackBar(
+        content: Text(
+          "Withdrawal Successful",
+        ),
+      ),
+    );
+
+    Navigator.pop(context);
+
+  } else {
+
+    ScaffoldMessenger.of(context)
+        .showSnackBar(
+      const SnackBar(
+        content: Text(
+          "Withdrawal Failed",
+        ),
+      ),
+    );
+  }
+}
 
   @override
   Widget build(BuildContext context) {

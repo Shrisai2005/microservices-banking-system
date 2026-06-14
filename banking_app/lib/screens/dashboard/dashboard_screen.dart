@@ -21,8 +21,7 @@ class _DashboardScreenState
   double balance = 0;
   bool isLoading = true;
 
-  final String accountNumber =
-      "1781023802024";
+  String accountNumber ="";
 
   @override
   void initState() {
@@ -30,20 +29,45 @@ class _DashboardScreenState
     loadBalance();
   }
 
-  Future<void> loadBalance() async {
+Future<void> loadBalance() async {
 
-    final accountService =
-        AccountService();
+  final email =
+      await LocalStorage.getEmail();
 
-    final result =
-        await accountService.getBalance(
-            accountNumber);
-
-    setState(() {
-      balance = result ?? 0;
-      isLoading = false;
-    });
+  if (email == null) {
+    return;
   }
+
+  final accountService =
+      AccountService();
+
+  final account =
+      await accountService
+          .getAccountNumberByEmail(
+              email);
+
+  if (account == null) {
+    return;
+  }
+
+  accountNumber = account;
+
+  await LocalStorage
+      .saveAccountNumber(
+          accountNumber);
+
+  final result =
+      await accountService
+          .getBalance(
+              accountNumber);
+
+  setState(() {
+
+    balance = result ?? 0;
+
+    isLoading = false;
+  });
+}
 
   @override
   Widget build(BuildContext context) {

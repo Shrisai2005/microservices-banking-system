@@ -1,7 +1,7 @@
 
 import 'package:flutter/material.dart';
 import '../../services/account_service.dart';
-
+import '../../storage/local_storage.dart';
 class DepositScreen extends StatefulWidget {
   const DepositScreen({super.key});
 
@@ -16,56 +16,78 @@ class _DepositScreenState
   final amountController =
       TextEditingController();
 
-  final String accountNumber =
-      "1781023802024";
+  String accountNumber = "";
 
   bool isLoading = false;
 
-  Future<void> depositMoney() async {
 
-    setState(() {
-      isLoading = true;
-    });
+Future<void> depositMoney() async {
 
-    bool success =
-        await AccountService().deposit(
-      accountNumber,
-      double.parse(
-        amountController.text,
+  final account =
+      await LocalStorage
+          .getAccountNumber();
+
+  if (account == null) {
+
+    ScaffoldMessenger.of(context)
+        .showSnackBar(
+      const SnackBar(
+        content: Text(
+          "Account not found",
+        ),
       ),
     );
 
-    setState(() {
-      isLoading = false;
-    });
-
-    if (success) {
-
-      if (!mounted) return;
-
-      ScaffoldMessenger.of(context)
-          .showSnackBar(
-        const SnackBar(
-          content: Text(
-            "Deposit Successful",
-          ),
-        ),
-      );
-
-      Navigator.pop(context);
-
-    } else {
-
-      ScaffoldMessenger.of(context)
-          .showSnackBar(
-        const SnackBar(
-          content: Text(
-            "Deposit Failed",
-          ),
-        ),
-      );
-    }
+    return;
   }
+
+  accountNumber = account;
+
+  setState(() {
+    isLoading = true;
+  });
+
+  bool success =
+      await AccountService().deposit(
+
+    accountNumber,
+
+    double.parse(
+      amountController.text,
+    ),
+  );
+
+  setState(() {
+    isLoading = false;
+  });
+
+  if (success) {
+
+    if (!mounted) return;
+
+    ScaffoldMessenger.of(context)
+        .showSnackBar(
+      const SnackBar(
+        content: Text(
+          "Deposit Successful",
+        ),
+      ),
+    );
+
+    Navigator.pop(context);
+
+  } else {
+
+    ScaffoldMessenger.of(context)
+        .showSnackBar(
+      const SnackBar(
+        content: Text(
+          "Deposit Failed",
+        ),
+      ),
+    );
+  }
+}
 
   @override
   Widget build(BuildContext context) {

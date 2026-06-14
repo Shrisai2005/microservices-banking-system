@@ -1,9 +1,12 @@
+
 package user_service.service;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestTemplate;
 
+import user_service.dto.CreateAccountRequest;
 import user_service.dto.LoginRequest;
 import user_service.dto.RegisterRequest;
 import user_service.entity.User;
@@ -17,12 +20,9 @@ public class UserService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
     private final JwtUtil jwtUtil;
+    private final RestTemplate restTemplate;
 
     public String register(RegisterRequest request) {
-
-        System.out.println("Name = " + request.getFullName());
-        System.out.println("Email = " + request.getEmail());
-        System.out.println("Password = " + request.getPassword());
 
         if (userRepository.findByEmail(request.getEmail()).isPresent()) {
             return "Email already exists";
@@ -36,6 +36,31 @@ public class UserService {
                 .build();
 
         userRepository.save(user);
+
+        CreateAccountRequest accountRequest =
+                new CreateAccountRequest();
+
+        accountRequest.setUserEmail(
+                request.getEmail());
+
+        accountRequest.setAccountType(
+                "SAVINGS");
+
+        try {
+
+            restTemplate.postForObject(
+                    "http://localhost:8082/api/accounts/create",
+                    accountRequest,
+                    Object.class
+            );
+
+        } catch (Exception e) {
+
+            System.out.println(
+                    "Account creation failed: "
+                            + e.getMessage()
+            );
+        }
 
         return "User Registered Successfully";
     }
@@ -59,6 +84,8 @@ public class UserService {
             return "Invalid Password";
         }
 
-        return jwtUtil.generateToken(user.getEmail());
+        return jwtUtil.generateToken(
+                user.getEmail()
+        );
     }
 }

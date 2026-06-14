@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import '../../services/auth_service.dart';
 import '../../storage/local_storage.dart';
 import '../dashboard/dashboard_screen.dart';
+import 'register_screen.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -39,21 +40,24 @@ class _LoginScreenState
       isLoading = false;
     });
 
-    if (token != null) {
+if (token != null) {
 
-      await LocalStorage.saveToken(token);
+  await LocalStorage.saveToken(token);
 
-      if (!mounted) return;
+  await LocalStorage.saveEmail(
+    emailController.text.trim(),
+  );
 
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(
-          builder: (_) =>
-              const DashboardScreen(),
-        ),
-      );
+  if (!mounted) return;
 
-    } else {
+  Navigator.pushReplacement(
+    context,
+    MaterialPageRoute(
+      builder: (_) =>
+          const DashboardScreen(),
+    ),
+  );
+} else {
 
       if (!mounted) return;
 
@@ -136,6 +140,25 @@ class _LoginScreenState
                       ),
               ),
             ),
+const SizedBox(height: 20),
+
+TextButton(
+
+  onPressed: () {
+
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (_) =>
+            const RegisterScreen(),
+      ),
+    );
+  },
+
+  child: const Text(
+    "Don't have an account? Register",
+  ),
+),
           ],
         ),
       ),
