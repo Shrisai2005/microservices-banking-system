@@ -79,11 +79,24 @@ public Account getAccountByEmail(String email) {
         transaction.setTransactionType("DEPOSIT");
         transaction.setAmount(request.getAmount());
 
-        restTemplate.postForObject(
-                "http://transaction-service:8083/api/transactions",
-                transaction,
-                Object.class
-        );
+        try {
+
+    System.out.println("Calling Transaction Service...");
+
+    Object response = restTemplate.postForObject(
+            "http://transaction-service:8083/api/transactions",
+            transaction,
+            Object.class
+    );
+
+    System.out.println("Transaction Saved Successfully");
+    System.out.println(response);
+
+} catch (Exception e) {
+
+    System.out.println("=== TRANSACTION ERROR ===");
+    e.printStackTrace();
+}
 
         return savedAccount;
     }
@@ -115,11 +128,24 @@ public Account getAccountByEmail(String email) {
         transaction.setTransactionType("WITHDRAW");
         transaction.setAmount(request.getAmount());
 
-        restTemplate.postForObject(
-                "http://transaction-service:8083/api/transactions",
-                transaction,
-                Object.class
-        );
+try {
+
+    System.out.println("Calling Transaction Service...");
+
+    Object response = restTemplate.postForObject(
+            "http://transaction-service:8083/api/transactions",
+            transaction,
+            Object.class
+    );
+
+    System.out.println("Transaction Saved Successfully");
+    System.out.println(response);
+
+} catch (Exception e) {
+
+    System.out.println("=== TRANSACTION ERROR ===");
+    e.printStackTrace();
+}
 
         return savedAccount;
     }
@@ -168,11 +194,24 @@ public Account getAccountByEmail(String email) {
         transaction.setTransactionType("TRANSFER");
         transaction.setAmount(request.getAmount());
 
-        restTemplate.postForObject(
-                "http://transaction-service:8083/api/transactions",
-                transaction,
-                Object.class
-        );
+ try {
+
+    System.out.println("Calling Transaction Service...");
+
+    Object response = restTemplate.postForObject(
+            "http://TRANSACTION-SERVICE/api/transactions",
+            transaction,
+            Object.class
+    );
+
+    System.out.println("Transaction Saved Successfully");
+    System.out.println(response);
+
+} catch (Exception e) {
+
+    System.out.println("=== TRANSACTION ERROR ===");
+    e.printStackTrace();
+}
 
         return "Transfer Successful";
     }
