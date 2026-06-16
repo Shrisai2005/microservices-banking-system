@@ -30,7 +30,7 @@ public class SecurityConfig {
 
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(
-                        "/api/transactions"
+                        "/api/transactions/**"
                         ).permitAll()
                         .anyRequest().authenticated()
                 )

@@ -80,7 +80,7 @@ public Account getAccountByEmail(String email) {
         transaction.setAmount(request.getAmount());
 
         restTemplate.postForObject(
-                "http://localhost:8083/api/transactions",
+                "http://transaction-service:8083/api/transactions",
                 transaction,
                 Object.class
         );
@@ -116,7 +116,7 @@ public Account getAccountByEmail(String email) {
         transaction.setAmount(request.getAmount());
 
         restTemplate.postForObject(
-                "http://localhost:8083/api/transactions",
+                "http://transaction-service:8083/api/transactions",
                 transaction,
                 Object.class
         );
@@ -169,7 +169,7 @@ public Account getAccountByEmail(String email) {
         transaction.setAmount(request.getAmount());
 
         restTemplate.postForObject(
-                "http://localhost:8083/api/transactions",
+                "http://transaction-service:8083/api/transactions",
                 transaction,
                 Object.class
         );

@@ -36,7 +36,7 @@ class AuthService {
       print("Response Body: ${response.body}");
       print("=================================");
 
-      if (response.statusCode == 200) {
+      if (response.statusCode == 200 && response.body.startsWith("eyJ")) {
         return response.body;
       }
 

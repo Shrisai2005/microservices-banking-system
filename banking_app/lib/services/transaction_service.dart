@@ -33,4 +33,21 @@ class TransactionService {
 
     return [];
   }
+
+Future<List<dynamic>> getRecentTransactions(
+    String accountNumber) async {
+
+  final transactions =
+      await getTransactions(
+          accountNumber);
+
+  if (transactions.length <= 3) {
+    return transactions;
+  }
+
+  return transactions
+      .reversed
+      .take(3)
+      .toList();
+}
 }
